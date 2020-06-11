@@ -1,5 +1,5 @@
 # Currency cotation
-> The final project of this course I've made is something i was willing to do some time, it's an currency analys software.
+> This is (finally) my first automation using Python and Selenium. The final project of the classes I've made to learn this is something i was willing to do some time, it's an currency analys software.
 
 
 ![](header.png)
