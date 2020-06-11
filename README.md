@@ -1,4 +1,4 @@
-# Product Name
+# Currency cotation
 > The final project of this course I've made is something i was willing to do some time, it's an currency analys software.
 
 
