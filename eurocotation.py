@@ -13,103 +13,93 @@
 
 #Imports
 from selenium.webdriver import Firefox
-from time import sleep
+import time
 
-#print(os.environ['TWILIO_ACCOUNT_SID'], os.environ['TWILIO_AUTH_TOKEN'])
-#client = Client(os.environ['TWILIO_ACCOUNT_SID'], os.environ['TWILIO_AUTH_TOKEN'])
-#from_whatsapp_number = 'whatsapp:+14155238886'
-#to_whatsapp_number = 'whatsapp:'+os.environ['MY_PHONE_NUMBER']
-#print(from_whatsapp_number,to_whatsapp_number)
-#message = client.messages.create(body='testelegal', from_=from_whatsapp_number, to=to_whatsapp_number)
-#print(message.sid)
-'''
-Opening the browser and getting the ROM data
-'''
-browser = Firefox()
-url = 'https://transferwise.com/br'
-browser.get(url)
-browser.implicitly_wait(5)
+class ZapBot:
+    def __init__(self):
+        self.driver = Firefox()
 
-#Buton for select curency
-firstButton = browser.find_element_by_xpath('//span/div/button/span')
-firstButton.click()
-browser.implicitly_wait(4)
-#Selecting EUR currency
-currencySelected = browser.find_element_by_xpath('/html/body/div[1]/div/div/main/div/div/div[2]/div[1]/div[1]/div/div[1]/div/span/div/ul/li[3]/a/span/span')
-currencySelected.click()
-browser.implicitly_wait(4)
-#Selecting BRL currency
-secondCurrencyButton = browser.find_element_by_xpath('/html/body/div[1]/div/div/main/div/div/div[2]/div[1]/div[1]/div/div[2]/div/span/div/button/span[1]/i')
-secondCurrencyButton.click()
-browser.implicitly_wait(4)
-#Calculating
-secondCurrency = browser.find_element_by_xpath('/html/body/div[1]/div/div/main/div/div/div[2]/div[1]/div[1]/div/div[2]/div/span/div/ul/li[12]/a/span/span')
-secondCurrency.click()
+    def EnviaZap(self,navegador,message, contato, website='https://web.whatsapp.com/'):
+        #Definindo website
+        navegador.get(website)
+        time.sleep(15)
+        busca = navegador.find_element_by_xpath('/html/body/div[1]/div/div/div[3]/div/div[1]/div/label/div/div[2]')
+        busca.click()
+        busca.send_keys(contato)
+        time.sleep(4)
+        conversa = navegador.find_element_by_xpath(f'//span[@title="{contato}"]')
+        time.sleep(3)
+        conversa.click()
+        #Elemento da caixa de texto         <div tabindex="-1" class="_3uMse">
+        texto = navegador.find_element_by_xpath("//div[contains(@class, '_3FRCZ')][contains(@data-tab, '1')]")
+        time.sleep(3)
+        texto.click()
+        texto.send_keys(message)
+        time.sleep(3)
+        #Elemento do botão enviar           <span data-icon="send" class="">
+        enviar = navegador.find_element_by_xpath("//button[@class='_1U1xa']")
+        time.sleep(2)
+        enviar.click()
 
-browser.implicitly_wait(4)
-sleep(4)
+class Cotacao:
 
-'''
-Geting the value of the current currency
-'''
-priceTarget = browser.find_element_by_xpath('/html/body/div[1]/div/div/main/div/div/div[2]/div[1]/div[1]/div/div[2]/div/input')
-value = priceTarget.get_attribute('value')
+    def __init__(self):
+        self.intValue = 0
+        self.value = "0"
 
-intValue =int(value.split(',')[0].replace('.',''))
-print(value, intValue)
 
-#Todo: Implement the criteria for alert:
-#Medium from last 3 days
-#Derivative value of last hours
-'''
-Sending the information after criteria: Whatsapp
-'''
-if  intValue > 5000:
-    #url_whatsapp = 'https://web.whatsapp.com/'
-    #browser.get(url_whatsapp)
-    #sleep(5)
+    def verCotacao(self, navegador):
+        '''
+        Opening the browser and getting the ROM data
+        '''
+        url = 'https://transferwise.com/br'
+        navegador.get(url)
+        time.sleep(5)
 
-    print('lavai')
-    link_enviar_mensagem = 'https://api.whatsapp.com/send?phone=5584996331397&text='+str(intValue)
-    browser.get(link_enviar_mensagem)
-    print('pronto')
+        #Buton for select curency
+        firstButton = navegador.find_element_by_xpath('/html/body/div[1]/div/div/main/div/div/div[2]/div[1]/div[1]/div/div[1]/div/span/div/button')
+        firstButton.click()
+        navegador.implicitly_wait(4)
+        #Selecting EUR currency
+        #<button class="btn btn-input btn-input-inverse btn-addon btn-lg dropdown-toggle" type="button" aria-expanded="false"><span><i class="currency-flag currency-flag-brl hidden-xs"></i>BRL</span><span class="caret"></span></button>
+        currencySelected = navegador.find_element_by_xpath('/html/body/div[1]/div/div/main/div/div/div[2]/div[1]/div[1]/div/div[1]/div/span/div/ul/li[3]/a/span/span')
+        currencySelected.click()
+        navegador.implicitly_wait(4)
+        #Selecting BRL currency
+        secondCurrencyButton = navegador.find_element_by_xpath('/html/body/div[1]/div/div/main/div/div/div[2]/div[1]/div[1]/div/div[2]/div/span/div/button/span[1]/i')
+        secondCurrencyButton.click()
+        navegador.implicitly_wait(4)
+        #Calculating
+        secondCurrency = navegador.find_element_by_xpath('/html/body/div[1]/div/div/main/div/div/div[2]/div[1]/div[1]/div/div[2]/div/span/div/ul/li[12]/a/span/span')
+        secondCurrency.click()
+        time.sleep(4)
 
-    #botao = browser.find_element_by_xpath('//*[@id="action-button"]')
-    #botao.click()
-    #sleep(4)
+        '''
+        Geting the value of the current currency
+        '''
+        priceTarget = navegador.find_element_by_xpath('/html/body/div[1]/div/div/main/div/div/div[2]/div[1]/div[1]/div/div[2]/div/input')
+        self.value = priceTarget.get_attribute('value')
 
-    #botao2 = browser.find_element_by_xpath('/html/body/div[1]/div/div/div[4]/div/footer/div[1]/div[3]/button')
-    #botao2.click()
-    #sleep(4)
+        self.intValue =int(self.value.split(',')[0].replace('.',''))
+        print (self.value, self.intValue)
 
-    #Cleiton chat
-    #busca = browser.find_element_by_xpath('/html/body/div[1]/div/div/div[3]/div/div[1]/div/label/div/div[2]')
-    #busca.click()
-    #busca.send_keys('cleiton')
-    #browser.implicitly_wait(5)
-    #cleitonporra =browser.find_element_by_xpath('//span[@title = "Cleiton"]')
-    #entra_cleiton = browser.find_element_by_xpath('/html/body/div[1]/div/div/div[3]/div/div[2]/div[1]/div/div/div[9]/div/div/div[2]/div[2]/div[1]')
-    #entra_cleiton.click()
-    #cleitonporra.click()
-    #browser.implicitly_wait(5)
-    #chat = browser.find_element_by_xpath('/html/body/div[1]/div/div/div[4]/div/footer/div[1]/div[2]/div/div[2]')
-    #chat.click()
-    #chat.send_keys('Teste! Enviado automaticamente. Preco do euro agora: '+value)
-    #enviar = browser.find_element_by_xpath('/html/body/div[1]/div/div/div[4]/div/footer/div[1]/div[3]')
-    #enviar.click()
+    def analyseCotation(self, limit):
+        #Todo: Implement the criteria for alert:
+        #Medium from last 3 days
+        #Derivative value of last hours
+        '''
+        Sending the information after criteria: Whatsapp
+        '''
+        if self.intValue > limit:
+            self.mensagem = self.value
+            return True
+def main():
+    botzinho = ZapBot()
+    cotacao = Cotacao()
+    cotacao.verCotacao(botzinho.driver)
+    if cotacao.analyseCotation(5740):
+       botzinho.EnviaZap(botzinho.driver,"A cotacao atual do euro é: "+cotacao.value, "cleitonray", 'https://web.whatsapp.com/')
+    botzinho.driver.quit()
 
-    #message = client.messages.create(body=value, from_=from_whatsapp_number, to=to_whatsapp_number)
-    #print(message.sid)
-    # remetente = browser.find_element_by_xpath('/html/body/div/div[2]/div[2]/form/table/tbody/tr[2]/td[1]/input')
-    # remetente.send_keys('Thiago')
-    # ddd = browser.find_element_by_xpath('/html/body/div/div[2]/div[2]/form/table/tbody/tr[2]/td[3]/input[2]')
-    # ddd.send_keys('84')
-    # phoneNumber = browser.find_element_by_xpath('/html/body/div/div[2]/div[2]/form/table/tbody/tr[2]/td[5]/input[1]')
-    # phoneNumber.send_keys('996331397')
-    # message= browser.find_element_by_xpath('/html/body/div/div[2]/div[2]/form/table/tbody/tr[4]/td/textarea')
-    # message.send_keys(intValue)
-    # buttonSend = browser.find_element_by_xpath('/html/body/div/div[2]/div[2]/form/table/tbody/tr[6]/td/button')
-    # browser.implicitly_wait(2)
-    # buttonSend.click()
-
-#browser.quit()
+if __name__ == '__main__':
+    main()
