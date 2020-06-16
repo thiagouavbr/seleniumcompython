@@ -13,12 +13,11 @@ After all set, just run the eurocotation.py with pythonand it will make the magi
 
 ## Usage example
 
-For the actual version, just the currency is retrieved and send by message for whatsapp using Twilio.
+For the actual version, just the currency is retrieved and send by message for whatsapp using Selenium and Python.
 
 
 ```sh
-make install
-npm test
+python bot.py
 ```
 
 
