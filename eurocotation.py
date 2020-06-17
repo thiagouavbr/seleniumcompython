@@ -98,8 +98,8 @@ def main():
         print("Atual: " + str(cotacao.value), "Media: " + str(media))
         if cotacao.analyseCotation(media):
            zapBot.EnviaZap(zapBot.browser,"A cotacao atual do euro é: " + cotacao.value, contact, 'https://web.whatsapp.com/')
-        time.sleep(15)
-        zapBot.browser.back()
+        #time.sleep(15)
+        #zapBot.browser.back()
         time.sleep(timeAnalysis)
 
     zapBot.browser.quit()
