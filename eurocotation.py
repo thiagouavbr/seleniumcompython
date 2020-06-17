@@ -14,32 +14,12 @@
 #Imports
 from selenium.webdriver import Firefox
 import time
+import numpy
+from bot import ZapBot
 
-class ZapBot:
+class browser:
     def __init__(self):
-        self.driver = Firefox()
-
-    def EnviaZap(self,navegador,message, contato, website='https://web.whatsapp.com/'):
-        #Definindo website
-        navegador.get(website)
-        time.sleep(15)
-        busca = navegador.find_element_by_xpath('/html/body/div[1]/div/div/div[3]/div/div[1]/div/label/div/div[2]')
-        busca.click()
-        busca.send_keys(contato)
-        time.sleep(4)
-        conversa = navegador.find_element_by_xpath(f'//span[@title="{contato}"]')
-        time.sleep(3)
-        conversa.click()
-        #Elemento da caixa de texto         <div tabindex="-1" class="_3uMse">
-        texto = navegador.find_element_by_xpath("//div[contains(@class, '_3FRCZ')][contains(@data-tab, '1')]")
-        time.sleep(3)
-        texto.click()
-        texto.send_keys(message)
-        time.sleep(3)
-        #Elemento do botão enviar           <span data-icon="send" class="">
-        enviar = navegador.find_element_by_xpath("//button[@class='_1U1xa']")
-        time.sleep(2)
-        enviar.click()
+        self.browser = Firefox()
 
 class Cotacao:
 
@@ -47,6 +27,14 @@ class Cotacao:
         self.intValue = 0
         self.value = "0"
 
+    def readCotation(self):
+        f = open("cotacao.txt", "r")
+        return f.read()
+
+    def writeCotation(self, cotation):
+        f = open("cotacao.txt", "a")
+        f.write(str(cotation)+",")
+        f.close()
 
     def verCotacao(self, navegador):
         '''
@@ -55,7 +43,9 @@ class Cotacao:
         url = 'https://transferwise.com/br'
         navegador.get(url)
         time.sleep(5)
-
+        '''
+        Selecting the currency
+        '''
         #Buton for select curency
         firstButton = navegador.find_element_by_xpath('/html/body/div[1]/div/div/main/div/div/div[2]/div[1]/div[1]/div/div[1]/div/span/div/button')
         firstButton.click()
@@ -81,7 +71,7 @@ class Cotacao:
         self.value = priceTarget.get_attribute('value')
 
         self.intValue =int(self.value.split(',')[0].replace('.',''))
-        print (self.value, self.intValue)
+        #print (self.value, self.intValue)
 
     def analyseCotation(self, limit):
         #Todo: Implement the criteria for alert:
@@ -93,13 +83,26 @@ class Cotacao:
         if self.intValue > limit:
             self.mensagem = self.value
             return True
+
 def main():
-    botzinho = ZapBot()
+    zapBot = ZapBot()
     cotacao = Cotacao()
-    cotacao.verCotacao(botzinho.driver)
-    if cotacao.analyseCotation(5740):
-       botzinho.EnviaZap(botzinho.driver,"A cotacao atual do euro é: "+cotacao.value, "cleitonray", 'https://web.whatsapp.com/')
-    botzinho.driver.quit()
+    contact = "eunatal"
+    timeAnalysis = 280
+    while True:
+        cotacoes = cotacao.readCotation()
+        my_numbers = [int(n) for n in cotacoes[:-1].split(",")]
+        media = numpy.mean(my_numbers)
+        cotacao.verCotacao(zapBot.browser)
+        cotacao.writeCotation(cotacao.intValue)
+        print("Atual: " + str(cotacao.value), "Media: " + str(media))
+        if cotacao.analyseCotation(media):
+           zapBot.EnviaZap(zapBot.browser,"A cotacao atual do euro é: " + cotacao.value, contact, 'https://web.whatsapp.com/')
+        time.sleep(15)
+        zapBot.browser.back()
+        time.sleep(timeAnalysis)
+
+    zapBot.browser.quit()
 
 if __name__ == '__main__':
     main()
