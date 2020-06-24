@@ -12,14 +12,14 @@
 ##################################################
 
 #Imports
-from selenium.webdriver import Firefox
+from selenium.webdriver import Chrome
 import time
 import numpy
 from bot import ZapBot
 
 class browser:
     def __init__(self):
-        self.browser = Firefox()
+        self.browser = Chrome()
 
 class Cotacao:
 
@@ -89,18 +89,18 @@ def main():
     cotacao = Cotacao()
     contact = "eunatal"
     timeAnalysis = 280
-    while True:
-        cotacoes = cotacao.readCotation()
-        my_numbers = [int(n) for n in cotacoes[:-1].split(",")]
-        media = numpy.mean(my_numbers)
-        cotacao.verCotacao(zapBot.browser)
-        cotacao.writeCotation(cotacao.intValue)
-        print("Atual: " + str(cotacao.value), "Media: " + str(media))
-        if cotacao.analyseCotation(media):
-           zapBot.EnviaZap(zapBot.browser,"A cotacao atual do euro é: " + cotacao.value, contact, 'https://web.whatsapp.com/')
-        #time.sleep(15)
-        #zapBot.browser.back()
-        time.sleep(timeAnalysis)
+    #while True:
+    cotacoes = cotacao.readCotation()
+    my_numbers = [int(n) for n in cotacoes[:-1].split(",")]
+    media = numpy.mean(my_numbers)
+    cotacao.verCotacao(zapBot.browser)
+    cotacao.writeCotation(cotacao.intValue)
+    print("Atual: " + str(cotacao.value), "Media: " + str(media))
+    if cotacao.analyseCotation(media):
+       zapBot.EnviaZap(zapBot.browser,"A cotacao atual do euro é: " + cotacao.value, contact, 'https://web.whatsapp.com/')
+    #time.sleep(15)
+    #zapBot.browser.back()
+#    time.sleep(timeAnalysis)
 
     zapBot.browser.quit()
 

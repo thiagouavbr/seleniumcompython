@@ -1,10 +1,13 @@
-from selenium.webdriver import Firefox
+from selenium import webdriver
 import time
 
 class ZapBot:
     def __init__(self):
-        self.browser = Firefox()
-
+        options =webdriver.ChromeOptions()
+        options.add_argument("--headless")
+        self.browser = webdriver.Chrome(options=options)
+        self.browser.set_page_load_timeout(10)
+        
     def EnviaZap(self,navegador,message, contato, website='https://web.whatsapp.com/'):
         #Definindo website
         navegador.get(website)
